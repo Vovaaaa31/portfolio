@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Портфоліо 3D-візуалізацій, Revit-проєктів і навчальних робіт.">
+  <meta name="theme-color" content="#0b0b0b">
+  <title>3D / BIM — Portfolio</title>
+  <style>
+    :root {
+      --ink: #0b0b0b;
+      --paper: #e9e6df;
+      --orange: #ff4d1c;
+      --blue: #8fa0ff;
+      --line: rgba(233, 230, 223, .25);
+      --muted: #a6a49e;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: Arial, Helvetica, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { color: inherit; font: inherit; }
+    ::selection { background: var(--orange); color: var(--paper); }
+
+    .noise {
+      position: fixed;
+      z-index: 99;
+      inset: 0;
+      pointer-events: none;
+      opacity: .055;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .header {
+      position: absolute;
+      z-index: 20;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 84px;
+      padding: 0 clamp(20px, 3.8vw, 64px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .13em;
+    }
+    .logo-mark {
+      position: relative;
+      width: 29px;
+      height: 29px;
+      border: 2px solid currentColor;
+      transform: rotate(45deg);
+    }
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border: 1px solid currentColor;
+    }
+    .header nav { display: flex; gap: 30px; }
+    .header nav a {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .header nav a:hover { color: var(--orange); }
+    .menu { display: none; background: none; border: 0; cursor: pointer; }
+
+    .hero {
+      position: relative;
+      min-height: 780px;
+      height: 100svh;
+      max-height: 980px;
+      padding: 126px clamp(20px, 3.8vw, 64px) 40px;
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      align-items: end;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .18;
+      background-image:
+        linear-gradient(rgba(255,255,255,.22) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.22) 1px, transparent 1px);
+      background-size: 7vw 7vw;
+      mask-image: linear-gradient(to bottom, black, transparent 90%);
+    }
+    .hero-copy { position: relative; z-index: 2; }
+    .micro {
+      margin: 0 0 22px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: "Courier New", monospace;
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .micro::before { content: ""; width: 38px; height: 2px; background: var(--orange); }
+    h1 {
+      margin: 0;
+      max-width: 1050px;
+      font-size: clamp(78px, 12vw, 190px);
+      font-weight: 800;
+      line-height: .76;
+      letter-spacing: -.085em;
+      text-transform: uppercase;
+    }
+    h1 span { color: var(--orange); }
+    .hero-bottom {
+      margin-top: 42px;
+      display: grid;
+      grid-template-columns: minmax(260px, 460px) 1fr;
+      align-items: end;
+      gap: 60px;
+    }
+    .hero-lead {
+      margin: 0;
+      color: #c8c5bd;
+      font-size: clamp(17px, 1.4vw, 22px);
+      line-height: 1.48;
+    }
+    .scroll-link {
+      justify-self: start;
+      padding: 13px 0 9px;
+      display: inline-flex;
+      align-items: center;
+      gap: 18px;
+      border-bottom: 1px solid currentColor;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .scroll-link b { font-size: 20px; transition: transform .25s ease; }
+    .scroll-link:hover b { transform: translate(5px, 5px); }
+
+    .hero-object {
+      position: relative;
+      z-index: 1;
+      align-self: center;
+      justify-self: center;
+      width: min(34vw, 490px);
+      aspect-ratio: 1;
+      filter: drop-shadow(0 28px 55px rgba(0,0,0,.45));
+      animation: hover 7s ease-in-out infinite;
+    }
+    .hero-object svg { width: 100%; height: 100%; overflow: visible; }
+    @keyframes hover { 50% { transform: translateY(-18px) rotate(2deg); } }
+
+    .ticker {
+      position: relative;
+      z-index: 3;
+      overflow: hidden;
+      background: var(--orange);
+      color: var(--ink);
+      border-top: 2px solid var(--ink);
+      border-bottom: 2px solid var(--ink);
+      transform: rotate(-1.2deg) scale(1.02);
+    }
+    .ticker-track {
+      width: max-content;
+      padding: 13px 0 11px;
+      display: flex;
+      gap: 34px;
+      animation: ticker 24s linear infinite;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    @keyframes ticker { to { transform: translateX(-50%); } }
+
+    .work {
+      padding: 140px clamp(20px, 3.8vw, 64px) 170px;
+      background: var(--paper);
+      color: var(--ink);
+    }
+    .section-top {
+      margin-bottom: 64px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 30px;
+    }
+    .kicker {
+      margin: 0 0 13px;
+      font: 700 11px "Courier New", monospace;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0;
+      font-size: clamp(58px, 8vw, 122px);
+      line-height: .85;
+      letter-spacing: -.075em;
+      text-transform: uppercase;
+    }
+    .filters { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
+    .filters button {
+      padding: 10px 15px;
+      border: 1px solid var(--ink);
+      border-radius: 99px;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .filters button.active, .filters button:hover { background: var(--ink); color: var(--paper); }
+
+    .project-list { border-top: 2px solid var(--ink); }
+    .project {
+      padding: 22px 0;
+      display: grid;
+      grid-template-columns: 70px 1.2fr .7fr 110px;
+      align-items: center;
+      gap: 24px;
+      border-bottom: 1px solid rgba(11,11,11,.28);
+      cursor: default;
+      transition: padding .25s ease, background .25s ease;
+    }
+    .project:hover { padding-left: 18px; padding-right: 18px; background: var(--orange); }
+    .project.hidden { display: none; }
+    .project-no { font: 700 12px "Courier New", monospace; }
+    .project h3 {
+      margin: 0;
+      font-size: clamp(27px, 3.4vw, 53px);
+      font-weight: 700;
+      letter-spacing: -.045em;
+    }
+    .project p {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.45;
+      text-transform: uppercase;
+    }
+    .thumb {
+      position: relative;
+      width: 110px;
+      aspect-ratio: 1.45;
+      overflow: hidden;
+      background: var(--blue);
+    }
+    .thumb svg { width: 100%; height: 100%; display: block; transition: transform .35s ease; }
+    .project:hover .thumb svg { transform: scale(1.12) rotate(-2deg); }
+
+    .feature {
+      position: relative;
+      min-height: 760px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--blue);
+      color: var(--ink);
+      overflow: hidden;
+    }
+    .feature-copy {
+      padding: 110px clamp(20px, 5vw, 86px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .feature-copy h2 { font-size: clamp(58px, 7vw, 108px); }
+    .feature-copy > p {
+      max-width: 600px;
+      margin: 40px 0 0;
+      font-size: clamp(19px, 2vw, 29px);
+      line-height: 1.32;
+      letter-spacing: -.02em;
+    }
+    .tools { margin-top: 55px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .tools span {
+      padding: 10px 14px;
+      border: 1px solid var(--ink);
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .feature-art {
+      position: relative;
+      min-height: 600px;
+      display: grid;
+      place-items: center;
+      border-left: 1px solid rgba(11,11,11,.28);
+      background:
+        radial-gradient(circle at 40% 40%, rgba(255,255,255,.55), transparent 36%),
+        linear-gradient(135deg, transparent 50%, rgba(11,11,11,.08) 50%);
+    }
+    .feature-art svg { width: 78%; max-width: 620px; filter: drop-shadow(30px 40px 35px rgba(39,42,75,.25)); }
+    .art-label {
+      position: absolute;
+      right: 28px;
+      bottom: 28px;
+      font: 700 11px "Courier New", monospace;
+      line-height: 1.5;
+      text-align: right;
+    }
+
+    .contact {
+      padding: 110px clamp(20px, 3.8vw, 64px) 30px;
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .contact-grid {
+      min-height: 520px;
+      display: grid;
+      grid-template-columns: .75fr 1.25fr;
+      gap: 9vw;
+      align-items: start;
+    }
+    .contact h2 { font-size: clamp(64px, 10vw, 156px); }
+    .contact h2 span { color: var(--orange); }
+    .contact-copy {
+      padding-top: 12px;
+      display: flex;
+      min-height: 430px;
+      flex-direction: column;
+    }
+    .contact-copy > p {
+      max-width: 620px;
+      margin: 0;
+      color: #c8c5bd;
+      font-size: clamp(20px, 2vw, 30px);
+      line-height: 1.38;
+    }
+    .contact-links { margin-top: auto; border-top: 1px solid var(--line); }
+    .contact-links a {
+      padding: 18px 0;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .contact-links a:hover { color: var(--orange); }
+    footer {
+      min-height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font: 700 10px "Courier New", monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .reveal { opacity: 0; transform: translateY(35px); transition: .8s cubic-bezier(.2,.75,.2,1); }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 900px) {
+      .hero { height: auto; min-height: 880px; grid-template-columns: 1fr; align-content: end; }
+      .hero-object { position: absolute; top: 14%; right: -4%; width: 47vw; opacity: .75; }
+      .hero-copy { padding-top: 240px; }
+      .hero-bottom { grid-template-columns: 1fr; gap: 22px; }
+      .project { grid-template-columns: 48px 1fr 100px; }
+      .project p { display: none; }
+      .feature { grid-template-columns: 1fr; }
+      .feature-art { border-left: 0; border-top: 1px solid rgba(11,11,11,.28); }
+      .contact-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .header { height: 70px; }
+      .header nav {
+        position: fixed;
+        z-index: 10;
+        inset: 0;
+        padding: 120px 24px;
+        display: flex;
+        flex-direction: column;
+        background: var(--orange);
+        color: var(--ink);
+        transform: translateY(-101%);
+        transition: transform .35s ease;
+      }
+      .header nav.open { transform: none; }
+      .header nav a { font-size: 37px; letter-spacing: -.04em; text-transform: none; }
+      .menu { position: relative; z-index: 12; display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+      .hero { min-height: 760px; padding-top: 100px; }
+      .hero-object { top: 13%; right: -18%; width: 80vw; opacity: .58; }
+      .hero-copy { padding-top: 290px; }
+      h1 { font-size: clamp(66px, 22vw, 104px); }
+      .hero-bottom { margin-top: 30px; }
+      .section-top { align-items: flex-start; flex-direction: column; }
+      .filters { justify-content: flex-start; }
+      .work { padding-top: 100px; padding-bottom: 110px; }
+      .project { grid-template-columns: 34px 1fr 78px; gap: 10px; }
+      .project:hover { padding-left: 8px; padding-right: 8px; }
+      .project h3 { font-size: 25px; }
+      .thumb { width: 78px; }
+      .feature { min-height: 0; }
+      .feature-copy { padding-top: 86px; padding-bottom: 86px; }
+      .feature-art { min-height: 430px; }
+      .contact { padding-top: 90px; }
+      .contact-grid { min-height: 620px; }
+      .contact-copy { min-height: 360px; }
+      footer { align-items: flex-start; flex-direction: column; justify-content: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <header class="header">
+    <a class="logo" href="#top"><span class="logo-mark"></span><span>PORTFOLIO / 26</span></a>
+    <nav id="nav">
+      <a href="#projects">Проєкти</a>
+      <a href="#about">Про мене</a>
+      <a href="#contact">Контакти</a>
+    </nav>
+    <button class="menu" id="menu" type="button" aria-label="Відкрити меню">MENU</button>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <p class="micro">Kharkiv · 3D visualizer / BIM student</p>
+        <h1>Digital<br><span>Spaces</span></h1>
+        <div class="hero-bottom">
+          <p class="hero-lead">Створюю 3D-візуалізації, працюю з Revit та перетворюю навчальні ідеї на зрозумілі візуальні проєкти.</p>
+          <a class="scroll-link" href="#projects">Дивитися роботи <b>↘</b></a>
+        </div>
+      </div>
+      <div class="hero-object" aria-hidden="true">
+        <svg viewBox="0 0 500 500">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#ff4d1c"/><stop offset="1" stop-color="#8fa0ff"/>
+            </linearGradient>
+          </defs>
+          <path d="M250 35 438 143v216L250 467 62 359V143Z" fill="url(#g)" stroke="#e9e6df" stroke-width="2"/>
+          <path d="m62 143 188 108 188-108M250 251v216M156 89l188 108v216M344 89 156 197v216" fill="none" stroke="#0b0b0b" stroke-width="2" opacity=".8"/>
+          <circle cx="250" cy="251" r="80" fill="#0b0b0b"/>
+          <circle cx="250" cy="251" r="52" fill="none" stroke="#e9e6df" stroke-width="2"/>
+          <path d="M215 251h70M250 216v70" stroke="#e9e6df" stroke-width="2"/>
+        </svg>
+      </div>
+    </section>
+
+    <div class="ticker" aria-hidden="true"><div class="ticker-track">
+      <span>3D VISUALIZATION ✦ REVIT ✦ BIM ✦ INTERIOR</span><span>3D VISUALIZATION ✦ REVIT ✦ BIM ✦ INTERIOR</span>
+      <span>3D VISUALIZATION ✦ REVIT ✦ BIM ✦ INTERIOR</span><span>3D VISUALIZATION ✦ REVIT ✦ BIM ✦ INTERIOR</span>
+    </div></div>
+
+    <section class="work" id="projects">
+      <div class="section-top reveal">
+        <div><p class="kicker">01 — Selected work</p><h2>Проєкти</h2></div>
+        <div class="filters" role="group" aria-label="Фільтр проєктів">
+          <button type="button" class="active" data-filter="all">Усі</button>
+          <button type="button" data-filter="3d">3D</button>
+          <button type="button" data-filter="revit">Revit</button>
+          <button type="button" data-filter="study">Навчальні</button>
+        </div>
+      </div>
+
+      <div class="project-list reveal">
+        <article class="project" data-category="3d">
+          <span class="project-no">001</span><h3>Interior scene</h3><p>3D-візуалізація<br>Світло · Матеріали</p>
+          <div class="thumb"><svg viewBox="0 0 160 110"><rect width="160" height="110" fill="#8fa0ff"/><path d="M0 90 94 50l66 25v35H0Z" fill="#0b0b0b"/><path d="M23 27h78v43H23z" fill="#e9e6df"/><circle cx="118" cy="31" r="18" fill="#ff4d1c"/></svg></div>
+        </article>
+        <article class="project" data-category="revit">
+          <span class="project-no">002</span><h3>BIM model</h3><p>Revit-проєкт<br>Модель · Документація</p>
+          <div class="thumb"><svg viewBox="0 0 160 110"><rect width="160" height="110" fill="#ff4d1c"/><path d="m80 12 62 35-62 36-62-35Z" fill="#e9e6df"/><path d="m18 48 62 35v20L18 69ZM80 83l62-36v21l-62 35Z" fill="#8fa0ff"/><path d="M47 31v34m33-53v71m32-54v54" stroke="#0b0b0b" fill="none"/></svg></div>
+        </article>
+        <article class="project" data-category="study">
+          <span class="project-no">003</span><h3>Graphic study</h3><p>Навчальна робота<br>Композиція · Креслення</p>
+          <div class="thumb"><svg viewBox="0 0 160 110"><rect width="160" height="110" fill="#e9e6df"/><g fill="none" stroke="#0b0b0b"><path d="M18 16h124v78H18zM42 31h76v48H42zM18 16l124 78M142 16 18 94"/><circle cx="80" cy="55" r="22"/></g><path d="M99 15h43v15H99z" fill="#ff4d1c"/></svg></div>
+        </article>
+        <article class="project" data-category="3d">
+          <span class="project-no">004</span><h3>Object study</h3><p>3D-моделювання<br>Форма · Матеріал</p>
+          <div class="thumb"><svg viewBox="0 0 160 110"><rect width="160" height="110" fill="#0b0b0b"/><path d="m80 15 43 25-43 25-43-25Z" fill="#ff4d1c"/><path d="m37 40 43 25v31L37 71ZM80 65l43-25v31L80 96Z" fill="#8fa0ff"/><circle cx="132" cy="19" r="9" fill="#e9e6df"/></svg></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="feature" id="about">
+      <div class="feature-copy reveal">
+        <div><p class="kicker">02 — Profile</p><h2>Точність<br>+ Ідея</h2><p>Розвиваюся у 3D-моделюванні, візуалізації інтер’єрів та BIM. Мені важливі чиста композиція, зрозуміла подача й увага до деталей.</p></div>
+        <div class="tools"><span>Revit</span><span>3ds Max</span><span>Blender</span><span>AutoCAD</span></div>
+      </div>
+      <div class="feature-art">
+        <svg viewBox="0 0 560 560" aria-hidden="true">
+          <path d="M280 45 480 160v230L280 505 80 390V160Z" fill="#e9e6df" stroke="#0b0b0b" stroke-width="3"/>
+          <path d="m80 160 200 116 200-116M280 276v229" fill="none" stroke="#0b0b0b" stroke-width="3"/>
+          <path d="M168 109v230l200 116V225Z" fill="#ff4d1c" fill-opacity=".76" stroke="#0b0b0b" stroke-width="3"/>
+          <circle cx="280" cy="276" r="73" fill="#0b0b0b"/><path d="M236 276h88M280 232v88" stroke="#e9e6df" stroke-width="3"/>
+        </svg>
+        <div class="art-label">MODEL / 02<br>X 50.004 · Y 36.118</div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="contact-grid reveal">
+        <div><p class="kicker">03 — Contact</p><h2>Let’s<br><span>work.</span></h2></div>
+        <div class="contact-copy">
+          <p>Відкритий до навчальних, творчих і перших комерційних проєктів у сфері 3D та BIM.</p>
+          <div class="contact-links">
+            <a href="https://github.com/Vovaaaa31" target="_blank" rel="noreferrer"><span>GitHub</span><span>↗</span></a>
+            <a href="mailto:your@email.com"><span>your@email.com — замініть на власний</span><span>↗</span></a>
+          </div>
+        </div>
+      </div>
+      <footer><span>3D / BIM PORTFOLIO</span><span>KHARKIV · UKRAINE</span><span>© 2026</span></footer>
+    </section>
+  </main>
+
+  <script>
+    const menu = document.querySelector('#menu');
+    const nav = document.querySelector('#nav');
+    menu.addEventListener('click', () => {
+      nav.classList.toggle('open');
+      menu.textContent = nav.classList.contains('open') ? 'CLOSE' : 'MENU';
+    });
+    nav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      nav.classList.remove('open');
+      menu.textContent = 'MENU';
+    }));
+
+    const buttons = document.querySelectorAll('[data-filter]');
+    const projects = document.querySelectorAll('.project');
+    buttons.forEach(button => button.addEventListener('click', () => {
+      buttons.forEach(item => item.classList.remove('active'));
+      button.classList.add('active');
+      projects.forEach(project => {
+        project.classList.toggle('hidden', button.dataset.filter !== 'all' && project.dataset.category !== button.dataset.filter);
+      });
+    }));
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => entry.isIntersecting && entry.target.classList.add('visible'));
+    }, { threshold: .12 });
+    document.querySelectorAll('.reveal').forEach(item => observer.observe(item));
+  </script>
+</body>
+</html>
